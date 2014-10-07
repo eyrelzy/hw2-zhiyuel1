@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<analysisEngineDescription xmlns="http://uima.apache.org/resourceSpecifier">
+  <frameworkImplementation>org.apache.uima.java</frameworkImplementation>
+  <primitive>false</primitive>  
+  <delegateAnalysisEngineSpecifiers>
+    <delegateAnalysisEngine key="SentenceDescriptor">
+      <import name="annotator.SentenceDescriptor"/>
+    </delegateAnalysisEngine>
+    <delegateAnalysisEngine key="LingpipeDescriptor">
+      <import name="annotator.LingpipeDescriptor"/>
+    </delegateAnalysisEngine>
+    <delegateAnalysisEngine key="AbnerDescriptor">
+      <import name="annotator.AbnerDescriptor"/>
+    </delegateAnalysisEngine>
+    <delegateAnalysisEngine key="TokenDescriptor">
+      <import name="annotator.TokenDescriptor"/>
+    </delegateAnalysisEngine>
+    <delegateAnalysisEngine key="ScoreDescriptor">
+      <import name="annotator.ScoreDescriptor"/>
+    </delegateAnalysisEngine>
+  </delegateAnalysisEngineSpecifiers>
+  <analysisEngineMetaData>
+    <name>hw2-zhiyuel-aae</name>
+    <description/>
+    <version>1.0</version>
+    <vendor/>
+    <configurationParameters/>
+    <configurationParameterSettings/>
+    <flowConstraints>
+      <fixedFlow>
+        <node>SentenceDescriptor</node>
+        <node>TokenDescriptor</node>
+        <node>AbnerDescriptor</node>
+        <node>LingpipeDescriptor</node>
+        <node>ScoreDescriptor</node>
+      </fixedFlow>
+    </flowConstraints>
+    <fsIndexCollection/>
+    <capabilities>
+      <capability>
+        <inputs/>
+        <outputs/>
+        <languagesSupported/>
+      </capability>
+    </capabilities>
+  <operationalProperties>
+      <modifiesCas>true</modifiesCas>
+      <multipleDeploymentAllowed>true</multipleDeploymentAllowed>
+      <outputsNewCASes>false</outputsNewCASes>
+    </operationalProperties>
+  </analysisEngineMetaData>
+  <resourceManagerConfiguration/>
+</analysisEngineDescription>
