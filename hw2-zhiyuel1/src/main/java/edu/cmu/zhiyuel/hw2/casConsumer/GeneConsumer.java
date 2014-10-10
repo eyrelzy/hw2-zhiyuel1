@@ -9,6 +9,8 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.HashSet;
 
 import org.apache.uima.cas.CAS;
@@ -21,6 +23,7 @@ import org.apache.uima.resource.ResourceProcessException;
 import org.xml.sax.SAXException;
 
 import ed.cmu.zhiyuel.types.FinalGene;
+import edu.cmu.zhiyuel.hw2.collectionReader.GeneReader;
 import edu.cmu.zhiyuel.types.LGene;
 
 /**
@@ -73,8 +76,11 @@ public class GeneConsumer extends CasConsumer_ImplBase {
   public void initialize() {
     String samplefile = (String) getConfigParameterValue("SAMPLE_FILE");
     strset = new HashSet<String>();
+    InputStream is = GeneReader.class.getClassLoader().getResourceAsStream(samplefile);
+    System.out.println(is == null);
+   
     try {
-      br = new BufferedReader(new FileReader(samplefile));
+      br = new BufferedReader(new InputStreamReader(is, "utf-8"));
       String str = null;
       while ((str = br.readLine()) != null) {
         strset.add(str);
