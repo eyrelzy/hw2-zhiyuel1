@@ -10,7 +10,7 @@ import org.apache.uima.jcas.cas.TOP_Type;
 
 
 /** 
- * Updated by JCasGen Mon Oct 06 23:33:08 EDT 2014
+ * Updated by JCasGen Thu Oct 09 14:33:34 EDT 2014
  * XML source: /Users/zhiyuel/git/hw2-zhiyuel1/hw2-zhiyuel1/src/main/resources/hw2-zhiyuel-aae.xml
  * @generated */
 public class AGene extends Gene {

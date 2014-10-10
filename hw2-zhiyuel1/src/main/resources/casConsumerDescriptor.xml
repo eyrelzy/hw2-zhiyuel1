@@ -25,13 +25,13 @@
       <nameValuePair>
         <name>OUTPUT_FILE</name>
         <value>
-          <string>src/main/resources/data/hw2-zhiyuel.out</string>
+          <string>hw2-zhiyuel.out</string>
         </value>
       </nameValuePair>
       <nameValuePair>
         <name>SAMPLE_FILE</name>
         <value>
-          <string>src/main/resources/data/sample.out</string>
+          <string>sample.out</string>
         </value>
       </nameValuePair>
     </configurationParameterSettings>

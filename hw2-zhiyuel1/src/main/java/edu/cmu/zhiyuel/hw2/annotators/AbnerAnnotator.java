@@ -11,11 +11,13 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 
+import org.apache.uima.UimaContext;
 import org.apache.uima.analysis_component.JCasAnnotator_ImplBase;
 import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
 import org.apache.uima.cas.FSIterator;
 import org.apache.uima.jcas.JCas;
 import org.apache.uima.jcas.tcas.Annotation;
+import org.apache.uima.resource.ResourceInitializationException;
 
 import util.Util;
 import abner.Tagger;
@@ -25,10 +27,15 @@ import edu.cmu.zhiyuel.types.Sentence;
 public class AbnerAnnotator extends JCasAnnotator_ImplBase {
   private BufferedWriter bw = null;
   private File out = null;
+  private Tagger t=null;
   public AbnerAnnotator() {
     // TODO Auto-generated constructor stub
     
   }
+  public void initialize(UimaContext aContext) throws ResourceInitializationException {
+    super.initialize(aContext);
+    t = new Tagger(Tagger.BIOCREATIVE);// OR load another trained CRF by the external model
+    }
 /**
  * 
  * getEntities() returns all segments in the entire document that correspond to entities (e.g. "DNA," "protein," etc.). Segment text is stored in result[0][...] and entity tags (minus "B-" and "I-" prefixes) are stored in result[1][...].
@@ -45,7 +52,6 @@ public class AbnerAnnotator extends JCasAnnotator_ImplBase {
     // Sentence annotation = (Sentence) it.next();
     // lines++;
     // }
-    Tagger t = new Tagger(Tagger.BIOCREATIVE);// OR load another trained CRF by the external model
 //    try {
 //      
 //      out = new File("Abner.out");
@@ -90,7 +96,7 @@ public class AbnerAnnotator extends JCasAnnotator_ImplBase {
 //        }
       }
     }
-    System.out.println("Finishing AberAnnotator...");
+    System.out.println("Finishing AbnerAnnotator...");
     // String[][]
     // result=t.getEntities("an Peroxydase reaction stains were negative, chloroacetate esterase were strongly positive.");
     // System.out.println(result[0][0]+result[1][0]);

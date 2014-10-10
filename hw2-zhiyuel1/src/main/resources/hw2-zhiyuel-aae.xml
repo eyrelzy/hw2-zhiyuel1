@@ -9,14 +9,14 @@
     <delegateAnalysisEngine key="LingpipeDescriptor">
       <import name="annotator.LingpipeDescriptor"/>
     </delegateAnalysisEngine>
-    <delegateAnalysisEngine key="AbnerDescriptor">
-      <import name="annotator.AbnerDescriptor"/>
-    </delegateAnalysisEngine>
     <delegateAnalysisEngine key="TokenDescriptor">
       <import name="annotator.TokenDescriptor"/>
     </delegateAnalysisEngine>
     <delegateAnalysisEngine key="ScoreDescriptor">
       <import name="annotator.ScoreDescriptor"/>
+    </delegateAnalysisEngine>
+    <delegateAnalysisEngine key="AbnerDescriptor">
+      <import name="annotator.AbnerDescriptor"/>
     </delegateAnalysisEngine>
   </delegateAnalysisEngineSpecifiers>
   <analysisEngineMetaData>
@@ -24,14 +24,14 @@
     <description/>
     <version>1.0</version>
     <vendor/>
-    <configurationParameters/>
+    <configurationParameters searchStrategy="language_fallback"/>
     <configurationParameterSettings/>
     <flowConstraints>
       <fixedFlow>
         <node>SentenceDescriptor</node>
         <node>TokenDescriptor</node>
-        <node>AbnerDescriptor</node>
         <node>LingpipeDescriptor</node>
+        <node>AbnerDescriptor</node>
         <node>ScoreDescriptor</node>
       </fixedFlow>
     </flowConstraints>

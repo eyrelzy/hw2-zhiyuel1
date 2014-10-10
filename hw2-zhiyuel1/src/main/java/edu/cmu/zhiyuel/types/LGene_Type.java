@@ -11,7 +11,7 @@ import org.apache.uima.cas.impl.TypeImpl;
 import org.apache.uima.cas.Type;
 
 /** 
- * Updated by JCasGen Mon Oct 06 23:33:08 EDT 2014
+ * Updated by JCasGen Thu Oct 09 14:33:34 EDT 2014
  * @generated */
 public class LGene_Type extends Gene_Type {
   /** @generated 

@@ -14,7 +14,7 @@ import org.apache.uima.cas.Feature;
 import edu.cmu.deiis.types.Annotation_Type;
 
 /** 
- * Updated by JCasGen Mon Oct 06 23:33:08 EDT 2014
+ * Updated by JCasGen Thu Oct 09 14:33:34 EDT 2014
  * @generated */
 public class Gene_Type extends Annotation_Type {
   /** @generated 

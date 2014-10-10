@@ -67,7 +67,7 @@ public class ScoreAnnotator extends JCasAnnotator_ImplBase {
         FinalGene fg = (FinalGene) itf.next();
         // System.out.println(fg.getId() + "|" + lg.getId());
         if (lg.getGeneName().equals(fg.getGeneName()) && lg.getId().equals(fg.getId())
-                && lg.getGeneStart() == fg.getGeneStart()) {
+                && lg.getGeneStart() == fg.getGeneStart()) {// lg
           fg.setConfidence(fg.getConfidence() + lg.getConfidence());
           fg.setCasProcessorId(this.getClass().getName());
           flag = true;
@@ -120,18 +120,6 @@ public class ScoreAnnotator extends JCasAnnotator_ImplBase {
       // System.out.println("AG:" + fgn.getConfidence() + "|" + fgn.getGeneName());
     }
     flag=false;
-//    try {
-//      out = new File("final_gene.tag");
-//      bw = new BufferedWriter(new FileWriter(out));
-//      FSIterator<Annotation> itfinal = aJCas.getAnnotationIndex(FinalGene.type).iterator();
-//      while (itfinal.hasNext()) {
-//        FinalGene ffgg = (FinalGene) itfinal.next();
-//        writeIntoFile(ffgg.getId(), ffgg.getGeneName(), ffgg.getGeneStart(), ffgg.getGeneEnd(),
-//                ffgg.getConfidence());
-//      }
-//    } catch (Exception ex) {
-//      ex.printStackTrace();
-//    }
     System.out.println("Finishing ScoreAnnotator...");
   }
 

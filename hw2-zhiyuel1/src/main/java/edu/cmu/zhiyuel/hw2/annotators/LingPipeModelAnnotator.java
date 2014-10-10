@@ -11,24 +11,27 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.regex.Pattern;
 
+import org.apache.uima.UimaContext;
 import org.apache.uima.analysis_component.JCasAnnotator_ImplBase;
 import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
 import org.apache.uima.cas.FSIterator;
 import org.apache.uima.jcas.JCas;
 import org.apache.uima.jcas.tcas.Annotation;
+import org.apache.uima.resource.ResourceInitializationException;
 
 import com.aliasi.chunk.Chunk;
 import com.aliasi.chunk.ConfidenceChunker;
 import com.aliasi.util.AbstractExternalizable;
 
+import ed.cmu.zhiyuel.types.FinalGene;
 import edu.cmu.zhiyuel.types.LGene;
 import edu.cmu.zhiyuel.types.Sentence;
 
 public class LingPipeModelAnnotator extends JCasAnnotator_ImplBase {
   private final int MAX_N_BEST_CHUNK = 10;
-
+private String biomodel="";
   private final double conf_threshold = 0.5;// increase threshold
-
+private ConfidenceChunker chunker=null;
   public LingPipeModelAnnotator() {
     // TODO Auto-generated constructor stub
   }
@@ -42,6 +45,27 @@ public class LingPipeModelAnnotator extends JCasAnnotator_ImplBase {
     }
     return cnt;
   }
+  public void initialize(UimaContext aContext) throws ResourceInitializationException {
+    super.initialize(aContext);
+    // Get config. parameter valuesSentenceId
+    //String[] SentenceIDStrings = (String[]) aContext.getConfigParameterValue("SentenceId");
+    // System.out.println("Pattern:"+SentenceIDStrings[0]);
+    // compile regular expressions
+    //mSentenceID = Pattern.compile(SentenceIDStrings[0]);
+    biomodel = (String) aContext.getConfigParameterValue("BIO_FILE");
+     //chunker = null;
+    try {
+//      chunker = (ConfidenceChunker) AbstractExternalizable.readObject(modelFile);
+      chunker = (ConfidenceChunker) AbstractExternalizable.readResourceObject(LingPipeModelAnnotator.class,biomodel);
+    } catch (ClassNotFoundException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    } catch (IOException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    }
+    //System.out.println(SentenceID);
+  }
 /**
  * use lingPipe's confidence name entity recognizer to identify the names with high confidence with some heuristic rules clearing noises.
  * @param aJCas
@@ -50,7 +74,7 @@ public class LingPipeModelAnnotator extends JCasAnnotator_ImplBase {
   public void process(JCas aJCas) throws AnalysisEngineProcessException {
     // TODO Auto-generated method stub
     System.out.println("Annotating Lingpipe...."+this.getClass().getName());
-    File modelFile = new File("src/main/resources/dataset/ne-en-bio-genetag.HmmChunker");
+//    File modelFile = new File("src/main/resources/dataset/ne-en-bio-genetag.HmmChunker");
 
     // last time:
     // ########correct###########15504
@@ -58,22 +82,14 @@ public class LingPipeModelAnnotator extends JCasAnnotator_ImplBase {
     // #####precision#########0.7685139288192724
     // #####geneName count#########20174
 
-    ConfidenceChunker chunker = null;
-    try {
-      chunker = (ConfidenceChunker) AbstractExternalizable.readObject(modelFile);
-    } catch (ClassNotFoundException e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
-    } catch (IOException e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
-    }
+    
     FSIterator<Annotation> it = aJCas.getAnnotationIndex(Sentence.type).iterator();// ?
     int lines = 1;
 //    while(it.hasNext()&&lines <= 600){
 //      Sentence annotation = (Sentence) it.next();
 //      lines++;
 //    }
+    int times=1;
     while (it.hasNext()) {
 
       // get sentence annotator from CAS
@@ -83,6 +99,7 @@ public class LingPipeModelAnnotator extends JCasAnnotator_ImplBase {
       // System.out.println(id + "|" + text);
       char[] cs = text.toCharArray();
       Iterator<Chunk> chunkit = chunker.nBestChunks(cs, 0, cs.length, MAX_N_BEST_CHUNK);
+      
       for (int n = 0; chunkit.hasNext(); n++) {
         Chunk c = chunkit.next();
         double conf = Math.pow(2.0, c.score());
@@ -91,20 +108,32 @@ public class LingPipeModelAnnotator extends JCasAnnotator_ImplBase {
         String phrase = text.substring(start, end);
         
           if (conf > 0.99 && !clearSymbol(phrase)) {
-            LGene lg = new LGene(aJCas);
-            lg.setId(id);
-            lg.setBegin(start);
-            lg.setEnd(end);
+            times++;
+            //FINAL GENE
+//            LGene lg = new LGene(aJCas);
+//            lg.setId(id);
+//            lg.setBegin(start);
+//            lg.setEnd(end);
             int a = trimWhiteSpaces(text.substring(0, start));
             int s = start - a;
             int b = trimWhiteSpaces(phrase);
             int e = end - a - b - 1;
-            lg.setGeneStart(s);
-            lg.setGeneEnd(e);
-            lg.setGeneName(phrase);
-            lg.setCasProcessorId(this.getClass().getName());
-            lg.setConfidence(conf);
-            lg.addToIndexes();
+//            lg.setGeneStart(s);
+//            lg.setGeneEnd(e);
+//            lg.setGeneName(phrase);
+//            lg.setCasProcessorId(this.getClass().getName());
+//            lg.setConfidence(conf);
+//            lg.addToIndexes();
+            
+            FinalGene fgn = new FinalGene(aJCas);
+            fgn.setId(id);
+            fgn.setGeneStart(s);
+            fgn.setGeneEnd(e);
+            fgn.setGeneName(phrase);
+            fgn.setConfidence(conf);
+            fgn.setCasProcessorId(ScoreAnnotator.class.getName());// change source
+            fgn.addToIndexes();
+            
 //            System.out.println(lines + ":" + id + "|" + n + "\t" + conf + "       (" + s + ", " + e
 //                    + ")       " + c.type() + "         " + phrase + "(" + a + " , " + b + "  )");
           } else if (conf > conf_threshold && clearHeuristic(phrase)) {// adjust n also for better
@@ -128,8 +157,10 @@ public class LingPipeModelAnnotator extends JCasAnnotator_ImplBase {
           }
         
       }
+      
       lines++;
     }
+    System.out.println(times);
     // FSIterator<Annotation> iter = aJCas.getAnnotationIndex(LGene.type).iterator();
     // while (iter.hasNext()) {
     // LGene annotation = (LGene) iter.next();

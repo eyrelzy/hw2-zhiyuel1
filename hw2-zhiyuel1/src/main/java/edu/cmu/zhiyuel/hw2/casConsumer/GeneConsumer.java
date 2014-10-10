@@ -25,17 +25,24 @@ import edu.cmu.zhiyuel.types.LGene;
 
 /**
  * <p>
- * Cas consumer for reading the cas in the system, and write them into an output file.
- * The parameters used in initialize() is set in its configuration file  CasConsumerDescriptor.xml.
- * It also reads the sample.out as an gold standard for comparing its performance. 
+ * Cas consumer for reading the cas in the system, and write them into an output file. The
+ * parameters used in initialize() is set in its configuration file CasConsumerDescriptor.xml. It
+ * also reads the sample.out as an gold standard for comparing its performance.
  * </p>
+ * 
  * @author zhiyuel
- * @param out <code>File</code>
- * @param bw <code>BufferedWriter</code>
- * @param br <code>BufferedReader</code>
- * @param correct record how many candidates hit in the gold standard file.
- * @param geneNamesize record how many candidates this system has recognized.
- * @param strset an HashSet to store the gold standards.
+ * @param out
+ *          <code>File</code>
+ * @param bw
+ *          <code>BufferedWriter</code>
+ * @param br
+ *          <code>BufferedReader</code>
+ * @param correct
+ *          record how many candidates hit in the gold standard file.
+ * @param geneNamesize
+ *          record how many candidates this system has recognized.
+ * @param strset
+ *          an HashSet to store the gold standards.
  */
 public class GeneConsumer extends CasConsumer_ImplBase {
   private File out = null;
@@ -50,15 +57,19 @@ public class GeneConsumer extends CasConsumer_ImplBase {
 
   private HashSet<String> strset;// reader from sample.out
 
+  private HashSet<String> removeDuplicates=new HashSet<String>();
+
   /**
    * 
    */
   public GeneConsumer() {
     // TODO Auto-generated constructor stub
   }
-/**
- * Read sample file and output file from configuration file, and finish the initialization process.
- * */
+
+  /**
+   * Read sample file and output file from configuration file, and finish the initialization
+   * process.
+   * */
   public void initialize() {
     String samplefile = (String) getConfigParameterValue("SAMPLE_FILE");
     strset = new HashSet<String>();
@@ -83,17 +94,20 @@ public class GeneConsumer extends CasConsumer_ImplBase {
     }
 
   }
-/**
- * <p>
- * Read finalGene from the cas system, and see how many candidates could hit in the sample.out.
- * The finalGene has three types of casProcessId, recording where it comes from.
- * We set a threshold here that we consider those coming from at least two annotators as gene names.
- * In this case, we extract those whose casProcessId is ScoreAnnotator.
- * Finally, we write those finalGene into the output file(hw2-zhiyuel.out).
- * </p>
- * @param aCAS unstructured data type in UIMA
- *  @see org.apache.uima.collection.base_cpm.CasObjectProcessor#processCas(org.apache.uima.cas.CAS)
- * */
+
+  /**
+   * <p>
+   * Read finalGene from the cas system, and see how many candidates could hit in the sample.out.
+   * The finalGene has three types of casProcessId, recording where it comes from. We set a
+   * threshold here that we consider those coming from at least two annotators as gene names. In
+   * this case, we extract those whose casProcessId is ScoreAnnotator. Finally, we write those
+   * finalGene into the output file(hw2-zhiyuel.out).
+   * </p>
+   * 
+   * @param aCAS
+   *          unstructured data type in UIMA
+   * @see org.apache.uima.collection.base_cpm.CasObjectProcessor#processCas(org.apache.uima.cas.CAS)
+   * */
   /*
    * (non-Javadoc)
    * 
@@ -128,13 +142,13 @@ public class GeneConsumer extends CasConsumer_ImplBase {
       boolean flag = false;
       // threshold is set here
       if (cas.equals("edu.cmu.zhiyuel.hw2.annotators.TokenAnnotator")) {
-        //flag=true;
+        // flag=true;
       } else if (cas.equals("edu.cmu.zhiyuel.hw2.annotators.AbnerAnnotator")) {
-        //flag=true;
+        // flag=true;
       } else if (cas.equals("edu.cmu.zhiyuel.hw2.annotators.LingPipeModelAnnotator")) {
-        //flag=true;
-      } else if (cas.equals("edu.cmu.zhiyuel.hw2.annotators.ScoreAnnotator")&&conf>=1.0) {
-        //at least combine two
+        // flag=true;
+      } else if (cas.equals("edu.cmu.zhiyuel.hw2.annotators.ScoreAnnotator")) {// &&conf>=1.0
+        // at least combine two or conf>0.99's lingpipe
         flag = true;
       }
       if (flag) {
@@ -154,13 +168,14 @@ public class GeneConsumer extends CasConsumer_ImplBase {
     }
 
   }
-/**
- * <p>
- * Execute after all process finish their jobs.
- * Compute the recall, precision and f-score by using the data from processCas(CAS aCAS)
- * @see org.apache.uima.collection.base_cpm.CasObjectProcessor#destory()
- * </p>
- * */
+
+  /**
+   * <p>
+   * Execute after all process finish their jobs. Compute the recall, precision and f-score by using
+   * the data from processCas(CAS aCAS)
+   * 
+   * @see org.apache.uima.collection.base_cpm.CasObjectProcessor#destory() </p>
+   * */
   public void destroy() {
 
     try {
@@ -180,21 +195,29 @@ public class GeneConsumer extends CasConsumer_ImplBase {
       e.printStackTrace();
     }
   }
-/**
- * <p>
- * write the gene name information into the file with a specific format.
- * </p>
- * @param geneIdentifier tags of geneId
- * @param geneName 
- * @param start the start point of gene name in the sentence skipping white spaces before itself.
- * @param end the end position of gene name in the sentence skipping white spaces before itself.
- * */
+
+  /**
+   * <p>
+   * write the gene name information into the file with a specific format.
+   * </p>
+   * 
+   * @param geneIdentifier
+   *          tags of geneId
+   * @param geneName
+   * @param start
+   *          the start point of gene name in the sentence skipping white spaces before itself.
+   * @param end
+   *          the end position of gene name in the sentence skipping white spaces before itself.
+   * */
   public void writeIntoFile(String geneIdentifier, String geneName, int start, int end)
           throws Exception {
 
     String phrase = geneIdentifier + "|" + start + " " + end + "|" + geneName;
-    if (strset.contains(phrase)) {
-      correct++;
+    if (!removeDuplicates.contains(phrase)) {
+      removeDuplicates.add(phrase);
+      if (strset.contains(phrase)) {
+        correct++;
+      }
     }
     bw.write(phrase);
     bw.newLine();

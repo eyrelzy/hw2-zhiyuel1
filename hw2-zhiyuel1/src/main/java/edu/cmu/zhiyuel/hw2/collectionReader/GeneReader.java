@@ -6,6 +6,10 @@ package edu.cmu.zhiyuel.hw2.collectionReader;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
+import java.util.HashSet;
 
 import org.apache.uima.cas.CAS;
 import org.apache.uima.cas.CASException;
@@ -45,16 +49,22 @@ public class GeneReader extends CollectionReader_ImplBase {
     String input = (String) getConfigParameterValue("INPUT_FILE");
     System.out.println("INPUT_FILE:" + input);
     System.out.println("Initializing Collection Reader....");
-    try{
-      in=new BufferedReader(new FileReader(input));
+    ///////////////
+    try {
+      in = new BufferedReader(new FileReader(input));
       String strs=null;
       while((strs=in.readLine())!=null){
         sb.append(strs+"\n");
       }
-      
-    }catch(Exception e){
+    } catch (UnsupportedEncodingException e1) {
+      // TODO Auto-generated catch block
+      e1.printStackTrace();
+    } catch (IOException e) {
+      // TODO Auto-generated catch block
       e.printStackTrace();
     }
+    /////////////////////
+  
     cas=sb.toString();
   }
   /**
